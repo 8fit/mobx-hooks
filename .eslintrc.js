@@ -7,7 +7,6 @@ module.exports = {
     'filenames',
     'import',
     'react-hooks',
-    'jest',
     'prettier',
   ],
   extends: [
@@ -16,8 +15,6 @@ module.exports = {
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:import/recommended',
     'plugin:import/typescript',
-    'plugin:jest/recommended',
-    'plugin:jest/style',
     'prettier',
     'prettier/@typescript-eslint',
   ],
@@ -60,6 +57,8 @@ module.exports = {
     {
       files: ['**/*.test.*'],
       env: { node: true, 'jest/globals': true },
+      plugins: ['jest'],
+      extends: ['plugin:jest/recommended', 'plugin:jest/style'],
       rules: {
         'no-console': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
