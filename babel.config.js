@@ -13,8 +13,11 @@ module.exports = ({ env }) => ({
     '@babel/preset-typescript',
   ],
   plugins: [
+    // For mobx
     ['@babel/plugin-proposal-decorators', { legacy: true }],
-    '@babel/plugin-proposal-class-properties',
+    // TODO: remove these when included with preset-env
+    '@babel/plugin-proposal-optional-chaining',
+    '@babel/plugin-proposal-nullish-coalescing-operator',
     [
       'babel-plugin-module-resolver',
       { alias: { '~': './src' }, extensions: ['.ts', '.js'] },
