@@ -1,5 +1,6 @@
 import { useMemo, useCallback } from 'react';
 
+import { Options } from './types';
 import useReactiveProps from './use-reactive-props';
 
 // TODO: find a way to type internals properly [@kavsingh]
@@ -15,12 +16,13 @@ const attachSourceToPropsMap = <S, T>(
 
 const createReactivePropsHookFrom = <S>(source: S) => <T>(
   propsMap: { [K in keyof T]: (source: S) => T[K] },
+  options?: Options<T>,
 ) => {
   const propsMapWithSource = useMemo(
     () => attachSourceToPropsMap(source, propsMap),
     [propsMap],
   );
-  const state = useReactiveProps(propsMapWithSource);
+  const state = useReactiveProps(propsMapWithSource, options);
   const withSource = useCallback(
     <H>(handler: (source: S) => H) => handler(source),
     [],

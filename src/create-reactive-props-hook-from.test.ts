@@ -5,8 +5,8 @@ import createReactivePropsHookFrom from './create-reactive-props-hook-from';
 
 const setup = () => {
   const source = {
-    storeA: new TestObservable({ a: 0, b: 'storeA' }),
-    storeB: new TestObservable({ a: 0, b: 'storeB' }),
+    storeA: new TestObservable({ num: 0, str: 'storeA', arr: [] }),
+    storeB: new TestObservable({ num: 0, str: 'storeB', arr: [] }),
   };
 
   return { source, hook: createReactivePropsHookFrom(source) };
@@ -18,34 +18,34 @@ describe('createReactivePropsHookFrom', () => {
 
     const rendered = renderHook(() =>
       hook({
-        contentA: source => source.storeA.computedContent,
-        contentB: source => source.storeB.computedContent,
+        contentA: source => source.storeA.computedSerializedAttributes,
+        contentB: source => source.storeB.computedSerializedAttributes,
       }),
     );
 
     expect(rendered.result.current[0]).toEqual({
-      contentA: 'value::0::storeA',
-      contentB: 'value::0::storeB',
+      contentA: '0::storeA::[]',
+      contentB: '0::storeB::[]',
     });
 
     act(() => {
-      source.storeA.set({ a: 1 });
+      source.storeA.set({ num: 1 });
     });
 
     expect(rendered.result.current[0]).toEqual({
-      contentA: 'value::1::storeA',
-      contentB: 'value::0::storeB',
+      contentA: '1::storeA::[]',
+      contentB: '0::storeB::[]',
     });
 
     rendered.unmount();
 
     act(() => {
-      source.storeB.set({ a: 1 });
+      source.storeB.set({ num: 1 });
     });
 
     expect(rendered.result.current[0]).toEqual({
-      contentA: 'value::1::storeA',
-      contentB: 'value::0::storeB',
+      contentA: '1::storeA::[]',
+      contentB: '0::storeB::[]',
     });
   });
 

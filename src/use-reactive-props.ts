@@ -2,21 +2,35 @@ import { useState, useEffect } from 'react';
 import { toJS, reaction } from 'mobx';
 import { isEqual } from 'lodash/fp';
 
+import { Options } from './types';
+
 // By default, toJS wont convert observables inside non-observables.
-const deepToJs = (item: unknown) => toJS(item, { recurseEverything: true });
+const deepToJS = (item: unknown) => toJS(item, { recurseEverything: true });
+
+type PropsMap<T> = { [K in keyof T]: () => T[K] };
 
 // TODO: find a way to type internals properly [@kavsingh]
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const useReactiveProps = <T>(propsMap: { [K in keyof T]: () => T[K] }) => {
-  const [state, setState] = useState<{ [K in keyof T]: T[K] }>(
-    Object.entries(propsMap).reduce(
-      (acc, [key, expression]: [unknown, any]) => {
-        acc[key as keyof T] = deepToJs(expression()) as any;
+const mapPropsMapToInitialState = <T>(
+  propsMap: PropsMap<T>,
+  converter: typeof toJS | typeof deepToJS,
+) =>
+  Object.entries(propsMap).reduce((acc, [key, expression]: [unknown, any]) => {
+    acc[key as keyof T] = converter(expression()) as any;
 
-        return acc;
-      },
-      {} as { [K in keyof T]: T[K] },
-    ),
+    return acc;
+  }, {} as T);
+
+const useReactiveProps = <T>(
+  propsMap: PropsMap<T>,
+  {
+    deepJsConversion = true,
+    equalityComparator = (value, nextValue) => isEqual(value, nextValue),
+  }: Options<T> = {},
+) => {
+  const converter = deepJsConversion ? deepToJS : toJS;
+  const [state, setState] = useState<T>(
+    mapPropsMapToInitialState<T>(propsMap, converter),
   );
 
   useEffect(() => {
@@ -26,9 +40,13 @@ const useReactiveProps = <T>(propsMap: { [K in keyof T]: () => T[K] }) => {
           expression,
           value => {
             setState(current => {
-              const nextValue = deepToJs(value);
+              const nextValue = converter(value);
 
-              return isEqual(current[key as keyof T], nextValue)
+              return equalityComparator(
+                current[key as keyof T],
+                nextValue as T[keyof T],
+                key as keyof T,
+              )
                 ? current
                 : { ...current, [key as keyof T]: nextValue };
             });
@@ -40,7 +58,7 @@ const useReactiveProps = <T>(propsMap: { [K in keyof T]: () => T[K] }) => {
     return () => {
       disposers.forEach(disposer => disposer());
     };
-  }, [propsMap]);
+  }, [converter, deepJsConversion, equalityComparator, propsMap]);
 
   return state;
 };

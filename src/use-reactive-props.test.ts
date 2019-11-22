@@ -8,47 +8,73 @@ describe('useReactiveProps', () => {
     const subject = new TestObservable();
     const rendered = renderHook(() =>
       useReactiveProps({
-        prop: () => subject.observableProp,
-        a: () => subject.getSafe('a'),
-        b: () => subject.getSafe('b'),
-        content: () => subject.computedContent,
+        primitive: () => subject.observablePrimitive,
+        num: () => subject.getSafe('num'),
+        str: () => subject.getSafe('str'),
+        serialized: () => subject.computedSerializedAttributes,
       }),
     );
 
-    expect(rendered.result.current.prop).toBe('value');
-    expect(rendered.result.current.a).toBeUndefined();
-    expect(rendered.result.current.b).toBeUndefined();
-    expect(rendered.result.current.content).toBe('value::undefined::undefined');
+    expect(rendered.result.current.primitive).toBe('primitive');
+    expect(rendered.result.current.num).toBeUndefined();
+    expect(rendered.result.current.str).toBeUndefined();
+    expect(rendered.result.current.serialized).toBe('undefined::undefined::[]');
 
     act(() => {
-      subject.observableProp = 'nextvalue';
+      subject.observablePrimitive = 'nextvalue';
     });
 
-    expect(rendered.result.current.prop).toBe('nextvalue');
-    expect(rendered.result.current.a).toBeUndefined();
-    expect(rendered.result.current.b).toBeUndefined();
-    expect(rendered.result.current.content).toBe(
-      'nextvalue::undefined::undefined',
-    );
+    expect(rendered.result.current.primitive).toBe('nextvalue');
+    expect(rendered.result.current.num).toBeUndefined();
+    expect(rendered.result.current.str).toBeUndefined();
+    expect(rendered.result.current.serialized).toBe('undefined::undefined::[]');
 
     act(() => {
-      subject.set({ a: 4 });
+      subject.set({ num: 4 });
     });
 
-    expect(rendered.result.current.prop).toBe('nextvalue');
-    expect(rendered.result.current.a).toBe(4);
-    expect(rendered.result.current.b).toBeUndefined();
-    expect(rendered.result.current.content).toBe('nextvalue::4::undefined');
+    expect(rendered.result.current.primitive).toBe('nextvalue');
+    expect(rendered.result.current.num).toBe(4);
+    expect(rendered.result.current.str).toBeUndefined();
+    expect(rendered.result.current.serialized).toBe('4::undefined::[]');
 
     rendered.unmount();
 
     act(() => {
-      subject.set({ b: 'defined' });
+      subject.set({ str: 'defined' });
     });
 
-    expect(rendered.result.current.prop).toBe('nextvalue');
-    expect(rendered.result.current.a).toBe(4);
-    expect(rendered.result.current.b).toBeUndefined();
-    expect(rendered.result.current.content).toBe('nextvalue::4::undefined');
+    expect(rendered.result.current.primitive).toBe('nextvalue');
+    expect(rendered.result.current.num).toBe(4);
+    expect(rendered.result.current.str).toBeUndefined();
+    expect(rendered.result.current.serialized).toBe('4::undefined::[]');
+  });
+
+  it('provides stable state', () => {
+    const subject = new TestObservable({ num: 1 });
+    const rendered = renderHook(() =>
+      useReactiveProps({
+        primitive: () => subject.observablePrimitive,
+        num: () => subject.getSafe('num'),
+        str: () => subject.getSafe('str'),
+        serialized: () => subject.computedSerializedAttributes,
+      }),
+    );
+
+    const firstResultState = rendered.result.current;
+
+    act(() => {
+      subject.set({ num: 2 });
+    });
+
+    const secondResultState = rendered.result.current;
+
+    expect(secondResultState).not.toBe(firstResultState);
+
+    act(() => {
+      subject.set({ num: 2 });
+    });
+
+    expect(rendered.result.current).toBe(secondResultState);
   });
 });

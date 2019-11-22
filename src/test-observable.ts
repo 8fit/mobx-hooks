@@ -1,11 +1,12 @@
 import { observable, computed } from 'mobx';
 
-type Attributes = { a: number; b: string };
+type Attributes = { num: number; str: string; arr: number[] };
 
 export default class TestObservable {
   private attributes = observable.map<keyof Attributes>({});
 
-  @observable observableProp = 'value';
+  @observable observablePrimitive = 'primitive';
+  @observable observableNonPrimitive: number[] = [];
 
   constructor(initialAttributes: Partial<Attributes> = {}) {
     this.attributes.merge(initialAttributes);
@@ -20,7 +21,9 @@ export default class TestObservable {
   }
 
   @computed
-  get computedContent() {
-    return `${this.observableProp}::${this.getSafe('a')}::${this.getSafe('b')}`;
+  get computedSerializedAttributes() {
+    return `${this.getSafe('num')}::${this.getSafe('str')}::${JSON.stringify(
+      this.getSafe('arr') ?? [],
+    )}`;
   }
 }
