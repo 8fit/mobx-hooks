@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 
 import TestObservable from './test-observable';
+import * as useReactiveProps from './use-reactive-props';
 import createReactivePropsHookFrom from './create-reactive-props-hook-from';
 
 const setup = () => {
@@ -13,6 +14,33 @@ const setup = () => {
 };
 
 describe('createReactivePropsHookFrom', () => {
+  it('calls reactive props hook and passes along the return', () => {
+    const mockReactivePropsReturn = {};
+
+    jest
+      .spyOn(useReactiveProps, 'default')
+      .mockImplementation(() => mockReactivePropsReturn);
+
+    const { hook } = setup();
+    const options = {};
+
+    const noOptions = renderHook(() => hook({}));
+
+    expect(useReactiveProps.default).toHaveBeenLastCalledWith({}, undefined);
+    expect(noOptions.result.current[0]).toBe(mockReactivePropsReturn);
+
+    noOptions.unmount();
+
+    const withOptions = renderHook(() => hook({}, options));
+
+    expect(useReactiveProps.default).toHaveBeenLastCalledWith({}, options);
+    expect(withOptions.result.current[0]).toBe(mockReactivePropsReturn);
+
+    withOptions.unmount();
+
+    (useReactiveProps.default as jest.Mock).mockRestore();
+  });
+
   it('responds to observable changes from the source object', () => {
     const { hook, source } = setup();
 
