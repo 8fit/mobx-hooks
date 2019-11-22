@@ -7,4 +7,4 @@ export interface Options<T> {
 
 export type Selector<T> = () => T;
 
-export type SelectorFromSource<S, T> = (source: S) => Selector<T>;
+export type SelectorFromSource<S, T> = (source: S) => T;

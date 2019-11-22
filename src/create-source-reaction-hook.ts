@@ -6,7 +6,7 @@ import useReaction from './use-reaction';
 const attachSourceToSelector = <S, T>(
   source: S,
   selector: SelectorFromSource<S, T>,
-) => selector(source);
+) => () => selector(source);
 
 const createSourceReactionHook = <S>(source: S) => <T>(
   selectorFromSource: SelectorFromSource<S, T>,

@@ -25,20 +25,20 @@ describe('createReactivePropsHookFrom', () => {
     const selector = () => ({});
     const options = {};
 
-    const noOptions = renderHook(() => useSource(() => selector));
+    const noOptions = renderHook(() => useSource(selector));
 
     expect(useReactiveProps.default).toHaveBeenLastCalledWith(
-      selector,
+      expect.any(Function),
       undefined,
     );
     expect(noOptions.result.current[0]).toBe(mockReactivePropsReturn);
 
     noOptions.unmount();
 
-    const withOptions = renderHook(() => useSource(() => selector, options));
+    const withOptions = renderHook(() => useSource(selector, options));
 
     expect(useReactiveProps.default).toHaveBeenLastCalledWith(
-      selector,
+      expect.any(Function),
       options,
     );
     expect(withOptions.result.current[0]).toBe(mockReactivePropsReturn);
@@ -52,7 +52,7 @@ describe('createReactivePropsHookFrom', () => {
     const { useSource, source } = setup();
 
     const rendered = renderHook(() =>
-      useSource(source => () => ({
+      useSource(source => ({
         contentA: source.storeA.computedSerializedAttributes,
         contentB: source.storeB.computedSerializedAttributes,
       })),
@@ -87,7 +87,7 @@ describe('createReactivePropsHookFrom', () => {
   it('returns a function that provides access to the source object', () => {
     const { useSource: hook, source } = setup();
 
-    const rendered = renderHook(() => hook(() => () => ({})));
+    const rendered = renderHook(() => hook(() => ({})));
 
     let providedSource: unknown;
 
