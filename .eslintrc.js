@@ -41,7 +41,7 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['*.config.*'],
+      files: ['*.config.*', '*.conf.*'],
       rules: {
         'filenames/match-exported': 'off',
       },

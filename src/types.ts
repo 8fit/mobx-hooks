@@ -7,3 +7,7 @@ export type EqualityComp<T> = <K extends keyof T>(
 export interface Options<T> {
   equalityComparator?: EqualityComp<T>;
 }
+
+export type PropsMap<T> = { [K in keyof T]: () => T[K] };
+
+export type PropsMapWithSource<S, T> = { [K in keyof T]: (source: S) => T[K] };

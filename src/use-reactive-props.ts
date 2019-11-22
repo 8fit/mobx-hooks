@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
 import { toJS, reaction } from 'mobx';
-import { isEqual } from 'lodash/fp';
 
-import { Options } from './types';
-
-type PropsMap<T> = { [K in keyof T]: () => T[K] };
+import { Options, PropsMap } from './types';
+import { valueEq } from './util';
 
 // TODO: find a way to type internals properly [@kavsingh]
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -17,9 +15,7 @@ const mapPropsMapToInitialState = <T>(propsMap: PropsMap<T>) =>
 
 const useReactiveProps = <T>(
   propsMap: PropsMap<T>,
-  {
-    equalityComparator = (value, nextValue) => isEqual(value, nextValue),
-  }: Options<T> = {},
+  { equalityComparator = valueEq }: Options<T> = {},
 ) => {
   const [state, setState] = useState<T>(mapPropsMapToInitialState<T>(propsMap));
 

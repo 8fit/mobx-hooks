@@ -1,13 +1,13 @@
 import { useMemo, useCallback } from 'react';
 
-import { Options } from './types';
+import { Options, PropsMapWithSource } from './types';
 import useReactiveProps from './use-reactive-props';
 
 // TODO: find a way to type internals properly [@kavsingh]
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const attachSourceToPropsMap = <S, T>(
   source: S,
-  propsMap: { [K in keyof T]: (source: S) => T[K] },
+  propsMap: PropsMapWithSource<S, T>,
 ) =>
   Object.entries(propsMap).reduce((acc, [key, expression]: [unknown, any]) => {
     acc[key as keyof T] = () => expression(source);
@@ -15,7 +15,7 @@ const attachSourceToPropsMap = <S, T>(
   }, {} as { [K in keyof T]: () => T[K] });
 
 const createReactivePropsHookFrom = <S>(source: S) => <T>(
-  propsMap: { [K in keyof T]: (source: S) => T[K] },
+  propsMap: PropsMapWithSource<S, T>,
   options?: Options<T>,
 ) => {
   const propsMapWithSource = useMemo(

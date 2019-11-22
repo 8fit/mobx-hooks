@@ -51,12 +51,13 @@ describe('useReactiveProps', () => {
   });
 
   it('provides stable state', () => {
-    const subject = new TestObservable({ num: 1 });
+    const subject = new TestObservable({ num: 1, arr: [1, 2] });
     const rendered = renderHook(() =>
       useReactiveProps({
         primitive: () => subject.observablePrimitive,
         num: () => subject.getSafe('num'),
         str: () => subject.getSafe('str'),
+        arr: () => subject.getSafe('arr'),
         serialized: () => subject.computedSerializedAttributes,
       }),
     );
@@ -73,6 +74,12 @@ describe('useReactiveProps', () => {
 
     act(() => {
       subject.set({ num: 2 });
+    });
+
+    expect(rendered.result.current).toBe(secondResultState);
+
+    act(() => {
+      subject.set({ arr: [1, 2] });
     });
 
     expect(rendered.result.current).toBe(secondResultState);

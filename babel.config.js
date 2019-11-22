@@ -5,9 +5,12 @@ module.exports = ({ env }) => ({
       {
         loose: true,
         shippedProposals: true,
-        ...(env('test')
-          ? { modules: 'commonjs', useBuiltIns: false }
-          : { modules: false, useBuiltIns: 'usage', corejs: 3 }),
+        ...(() => {
+          if (env('test')) return { modules: 'commonjs', useBuiltIns: false };
+          if (env('production')) return { modules: false, useBuiltIns: false };
+
+          return { modules: false, useBuiltIns: 'usage', corejs: 3 };
+        })(),
       },
     ],
     '@babel/preset-typescript',
