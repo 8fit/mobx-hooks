@@ -4,19 +4,13 @@ import { isEqual } from 'lodash/fp';
 
 import { Options } from './types';
 
-// By default, toJS wont convert observables inside non-observables.
-const deepToJS = (item: unknown) => toJS(item, { recurseEverything: true });
-
 type PropsMap<T> = { [K in keyof T]: () => T[K] };
 
 // TODO: find a way to type internals properly [@kavsingh]
 /* eslint-disable @typescript-eslint/no-explicit-any */
-const mapPropsMapToInitialState = <T>(
-  propsMap: PropsMap<T>,
-  converter: typeof toJS | typeof deepToJS,
-) =>
+const mapPropsMapToInitialState = <T>(propsMap: PropsMap<T>) =>
   Object.entries(propsMap).reduce((acc, [key, expression]: [unknown, any]) => {
-    acc[key as keyof T] = converter(expression()) as any;
+    acc[key as keyof T] = toJS(expression()) as any;
 
     return acc;
   }, {} as T);
@@ -24,14 +18,10 @@ const mapPropsMapToInitialState = <T>(
 const useReactiveProps = <T>(
   propsMap: PropsMap<T>,
   {
-    deepJsConversion = true,
     equalityComparator = (value, nextValue) => isEqual(value, nextValue),
   }: Options<T> = {},
 ) => {
-  const converter = deepJsConversion ? deepToJS : toJS;
-  const [state, setState] = useState<T>(
-    mapPropsMapToInitialState<T>(propsMap, converter),
-  );
+  const [state, setState] = useState<T>(mapPropsMapToInitialState<T>(propsMap));
 
   useEffect(() => {
     const disposers = Object.entries(propsMap).map(
@@ -40,7 +30,7 @@ const useReactiveProps = <T>(
           expression,
           value => {
             setState(current => {
-              const nextValue = converter(value);
+              const nextValue = toJS(value);
 
               return equalityComparator(
                 current[key as keyof T],
@@ -58,7 +48,7 @@ const useReactiveProps = <T>(
     return () => {
       disposers.forEach(disposer => disposer());
     };
-  }, [converter, deepJsConversion, equalityComparator, propsMap]);
+  }, [equalityComparator, propsMap]);
 
   return state;
 };

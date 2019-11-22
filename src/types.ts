@@ -5,6 +5,5 @@ export type EqualityComp<T> = <K extends keyof T>(
 ) => boolean;
 
 export interface Options<T> {
-  deepJsConversion?: boolean;
   equalityComparator?: EqualityComp<T>;
 }
