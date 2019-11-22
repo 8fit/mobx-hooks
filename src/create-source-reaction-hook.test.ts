@@ -1,8 +1,8 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 
 import TestObservable from './test-observable';
-import * as useReactiveProps from './use-reactive-props';
-import createReactivePropsHookFrom from './create-reactive-props-hook-from';
+import * as useReactiveProps from './use-reaction';
+import createSourceReactionHook from './create-source-reaction-hook';
 
 const setup = () => {
   const source = {
@@ -10,7 +10,7 @@ const setup = () => {
     storeB: new TestObservable({ num: 0, str: 'storeB', arr: [] }),
   };
 
-  return { source, hook: createReactivePropsHookFrom(source) };
+  return { source, useSource: createSourceReactionHook(source) };
 };
 
 describe('createReactivePropsHookFrom', () => {
@@ -21,19 +21,26 @@ describe('createReactivePropsHookFrom', () => {
       .spyOn(useReactiveProps, 'default')
       .mockImplementation(() => mockReactivePropsReturn);
 
-    const { hook } = setup();
+    const { useSource } = setup();
+    const selector = () => ({});
     const options = {};
 
-    const noOptions = renderHook(() => hook({}));
+    const noOptions = renderHook(() => useSource(() => selector));
 
-    expect(useReactiveProps.default).toHaveBeenLastCalledWith({}, undefined);
+    expect(useReactiveProps.default).toHaveBeenLastCalledWith(
+      selector,
+      undefined,
+    );
     expect(noOptions.result.current[0]).toBe(mockReactivePropsReturn);
 
     noOptions.unmount();
 
-    const withOptions = renderHook(() => hook({}, options));
+    const withOptions = renderHook(() => useSource(() => selector, options));
 
-    expect(useReactiveProps.default).toHaveBeenLastCalledWith({}, options);
+    expect(useReactiveProps.default).toHaveBeenLastCalledWith(
+      selector,
+      options,
+    );
     expect(withOptions.result.current[0]).toBe(mockReactivePropsReturn);
 
     withOptions.unmount();
@@ -42,13 +49,13 @@ describe('createReactivePropsHookFrom', () => {
   });
 
   it('responds to observable changes from the source object', () => {
-    const { hook, source } = setup();
+    const { useSource, source } = setup();
 
     const rendered = renderHook(() =>
-      hook({
-        contentA: source => source.storeA.computedSerializedAttributes,
-        contentB: source => source.storeB.computedSerializedAttributes,
-      }),
+      useSource(source => () => ({
+        contentA: source.storeA.computedSerializedAttributes,
+        contentB: source.storeB.computedSerializedAttributes,
+      })),
     );
 
     expect(rendered.result.current[0]).toEqual({
@@ -78,9 +85,9 @@ describe('createReactivePropsHookFrom', () => {
   });
 
   it('returns a function that provides access to the source object', () => {
-    const { hook, source } = setup();
+    const { useSource: hook, source } = setup();
 
-    const rendered = renderHook(() => hook({}));
+    const rendered = renderHook(() => hook(() => () => ({})));
 
     let providedSource: unknown;
 

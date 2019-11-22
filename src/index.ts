@@ -1,4 +1,4 @@
-import useReactiveProps from './use-reactive-props';
-import createReactivePropsHookFrom from './create-reactive-props-hook-from';
+import useReaction from './use-reaction';
+import createSourceReactionHook from './create-source-reaction-hook';
 
-export { useReactiveProps, createReactivePropsHookFrom };
+export { useReaction, createSourceReactionHook };

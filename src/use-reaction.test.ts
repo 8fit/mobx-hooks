@@ -1,18 +1,18 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 
 import TestObservable from './test-observable';
-import useReactiveProps from './use-reactive-props';
+import useReaction from './use-reaction';
 
-describe('useReactiveProps', () => {
+describe('useReaction', () => {
   it('reacts to observable changes and cleans up on unmount', () => {
     const subject = new TestObservable();
     const rendered = renderHook(() =>
-      useReactiveProps({
-        primitive: () => subject.observablePrimitive,
-        num: () => subject.getSafe('num'),
-        str: () => subject.getSafe('str'),
-        serialized: () => subject.computedSerializedAttributes,
-      }),
+      useReaction(() => ({
+        primitive: subject.observablePrimitive,
+        num: subject.getSafe('num'),
+        str: subject.getSafe('str'),
+        serialized: subject.computedSerializedAttributes,
+      })),
     );
 
     expect(rendered.result.current.primitive).toBe('primitive');
@@ -53,13 +53,13 @@ describe('useReactiveProps', () => {
   it('provides stable state', () => {
     const subject = new TestObservable({ num: 1, arr: [1, 2] });
     const rendered = renderHook(() =>
-      useReactiveProps({
-        primitive: () => subject.observablePrimitive,
-        num: () => subject.getSafe('num'),
-        str: () => subject.getSafe('str'),
-        arr: () => subject.getSafe('arr'),
-        serialized: () => subject.computedSerializedAttributes,
-      }),
+      useReaction(() => ({
+        primitive: subject.observablePrimitive,
+        num: subject.getSafe('num'),
+        str: subject.getSafe('str'),
+        arr: subject.getSafe('arr'),
+        serialized: subject.computedSerializedAttributes,
+      })),
     );
 
     const firstResultState = rendered.result.current;

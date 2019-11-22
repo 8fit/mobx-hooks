@@ -1,13 +1,10 @@
-export type EqualityComp<T> = <K extends keyof T>(
-  currentValue: T[K],
-  nextValue: T[K],
-  key: K,
-) => boolean;
+import { IEqualsComparer } from 'mobx';
 
 export interface Options<T> {
-  equalityComparator?: EqualityComp<T>;
+  jsConvert?: boolean;
+  stateComparer?: IEqualsComparer<T>;
 }
 
-export type PropsMap<T> = { [K in keyof T]: () => T[K] };
+export type Selector<T> = () => T;
 
-export type PropsMapWithSource<S, T> = { [K in keyof T]: (source: S) => T[K] };
+export type SelectorFromSource<S, T> = (source: S) => Selector<T>;
