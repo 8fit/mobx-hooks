@@ -26,23 +26,19 @@ const useReactiveProps = <T>(
   useEffect(() => {
     const disposers = Object.entries(propsMap).map(
       ([key, expression]: [unknown, any]) =>
-        reaction(
-          expression,
-          value => {
-            setState(current => {
-              const nextValue = toJS(value);
+        reaction(expression, value => {
+          setState(current => {
+            const nextValue = toJS(value);
 
-              return equalityComparator(
-                current[key as keyof T],
-                nextValue as T[keyof T],
-                key as keyof T,
-              )
-                ? current
-                : { ...current, [key as keyof T]: nextValue };
-            });
-          },
-          { fireImmediately: true },
-        ),
+            return equalityComparator(
+              current[key as keyof T],
+              nextValue as T[keyof T],
+              key as keyof T,
+            )
+              ? current
+              : { ...current, [key as keyof T]: nextValue };
+          });
+        }),
     );
 
     return () => {

@@ -5,6 +5,7 @@ node_modules/
 *.log.*
 
 .idea/
+.stryker-tmp/
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
