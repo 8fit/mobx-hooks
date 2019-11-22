@@ -1,28 +1,19 @@
 import { useState, useEffect } from 'react';
 import { toJS, reaction, comparer } from 'mobx';
 
-import { Options, Selector } from './types';
-
-const consumeInitialStateFromSelector = <T>(
-  selector: Selector<T>,
-  convert: boolean,
-) => (convert ? toJS(selector()) : selector());
+import { Options } from './types';
 
 const useReaction = <T>(
-  selector: Selector<T>,
+  selector: () => T,
   { jsConvert = true, stateComparer = comparer.structural }: Options<T> = {},
 ) => {
-  const [state, setState] = useState<T>(
-    consumeInitialStateFromSelector<T>(selector, jsConvert),
-  );
+  const [state, setState] = useState(jsConvert ? toJS(selector()) : selector());
 
   useEffect(() => {
     const disposer = reaction(selector, value => {
-      const nextValue = jsConvert ? toJS(value) : value;
+      const next = jsConvert ? toJS(value) : value;
 
-      setState(current =>
-        stateComparer(current, nextValue) ? current : value,
-      );
+      setState(current => (stateComparer(current, next) ? current : value));
     });
 
     return disposer;
