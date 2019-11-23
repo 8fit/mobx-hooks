@@ -9,8 +9,8 @@ describe('useReaction', () => {
     const rendered = renderHook(() =>
       useReaction(() => ({
         primitive: subject.observablePrimitive,
-        num: subject.getSafe('num'),
-        str: subject.getSafe('str'),
+        num: subject.get('num'),
+        str: subject.get('str'),
         serialized: subject.computedSerializedAttributes,
       })),
     );
@@ -55,9 +55,9 @@ describe('useReaction', () => {
     const rendered = renderHook(() =>
       useReaction(() => ({
         primitive: subject.observablePrimitive,
-        num: subject.getSafe('num'),
-        str: subject.getSafe('str'),
-        arr: subject.getSafe('arr'),
+        num: subject.get('num'),
+        str: subject.get('str'),
+        arr: subject.get('arr'),
         serialized: subject.computedSerializedAttributes,
       })),
     );

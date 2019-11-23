@@ -16,14 +16,14 @@ export default class TestObservable {
     this.attributes.merge(attributes);
   }
 
-  getSafe<T extends keyof Attributes>(key: T): Attributes[T] | undefined {
-    return this.attributes.has(key) ? this.attributes.get(key) : undefined;
+  get<T extends keyof Attributes>(key: T): Attributes[T] | undefined {
+    return this.attributes.get(key);
   }
 
   @computed
   get computedSerializedAttributes() {
-    return `${this.getSafe('num')}::${this.getSafe('str')}::${JSON.stringify(
-      this.getSafe('arr') ?? [],
+    return `${this.get('num')}::${this.get('str')}::${JSON.stringify(
+      this.get('arr') ?? [],
     )}`;
   }
 }
