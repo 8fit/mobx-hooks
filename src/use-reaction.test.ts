@@ -83,5 +83,11 @@ describe('useReaction', () => {
     });
 
     expect(rendered.result.current).toBe(secondResultState);
+
+    act(() => {
+      subject.set({ arr: [2, 1] });
+    });
+
+    expect(rendered.result.current).not.toBe(secondResultState);
   });
 });

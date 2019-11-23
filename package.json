@@ -8,6 +8,7 @@
     "test:mutation": "stryker run",
     "lint": "tsc && eslint . --ext .ts,.js",
     "build:js": "NODE_ENV=production rollup --config",
+    "build:declaration": "tsc --project ./tsconfig.build.json --outFile ./dist/index.d.ts",
     "build": "yarn build:js"
   },
   "dependencies": {},
