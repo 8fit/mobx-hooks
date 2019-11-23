@@ -2,8 +2,6 @@
   "name": "@8fit/mobx-hooks",
   "version": "0.0.1",
   "license": "MIT",
-  "main": "./lib/index.js",
-  "module": "./lib/index.module.js",
   "typings": "./lib/src/index.d.ts",
   "scripts": {
     "test": "jest",
@@ -12,14 +10,15 @@
     "prebuild": "rm -rf lib && rm -rf dist",
     "build:js": "NODE_ENV=production rollup --config",
     "build:declarations": "tsc --project ./tsconfig.build.json",
-    "build:extract_api": "api-extractor run --local --verbose",
-    "build": "yarn build:js && yarn build:declarations && yarn build:extract_api",
+    "build:extract_api": "api-extractor run --local",
+    "build:bundle_package_json": "ts-node -P tsconfig.tsnode.json scripts/bundle-package-json.ts",
+    "build": "yarn build:js && yarn build:declarations && yarn build:extract_api && yarn build:bundle_package_json",
     "postbuild": "rm -rf lib"
   },
   "dependencies": {},
   "peerDependencies": {
-    "mobx": ">=4.x.x",
-    "react": ">=16.8.x"
+    "mobx": ">=4",
+    "react": ">=16.8"
   },
   "devDependencies": {
     "@babel/cli": "7.7.4",
@@ -42,7 +41,6 @@
     "@types/react": "16.9.12",
     "@typescript-eslint/eslint-plugin": "2.8.0",
     "@typescript-eslint/parser": "2.8.0",
-    "add": "2.0.6",
     "babel-jest": "24.9.0",
     "babel-plugin-module-resolver": "3.2.0",
     "eslint": "6.7.0",
@@ -63,6 +61,7 @@
     "rollup-plugin-cleanup": "3.1.1",
     "rollup-plugin-node-resolve": "5.2.0",
     "rollup-plugin-typescript2": "0.25.2",
+    "ts-node": "8.5.2",
     "typescript": "3.7.2"
   }
 }
