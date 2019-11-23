@@ -11,9 +11,8 @@ import useReaction from './use-reaction';
  * useStoreReaction(store => store.account.locale, locale => (cache.invalidate(locale !== 'en')))
  * // will run effect whenever store.account.locale changes
  *
- * @param expressionFromData mobx reaction expression
- * @param effect mobx reaction effect
- * @param options mobx reaction options
+ * @param source source object containing observables
+ * @returns useReaction hook
  */
 const createSourceReactionHook = <S>(source: S) => <T>(
   expressionFromSource: (source: S, reactionObject: IReactionPublic) => T,

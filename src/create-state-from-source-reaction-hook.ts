@@ -17,9 +17,7 @@ import useStateFromReaction from './use-state-from-reaction';
  * // state is { isPro: typeof store.account.isPro }
  * // withStore used to extend functionality of a hook
  * @param source object containing observables
- * @returns state from reaction hook
- * @param expression mobx reaction expression (note: reaction object is not passed in initial state setup)
- * @param options state update options
+ * @returns useStateFromReaction hook
  */
 const createStateFromSourceReactionHook = <S>(source: S) => <T>(
   expressionFromSource: (source: S, reactionObject?: IReactionPublic) => T,
