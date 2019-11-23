@@ -1,25 +1,23 @@
-import { useState, useEffect } from 'react';
-import { toJS, reaction, comparer } from 'mobx';
+import { useEffect } from 'react';
+import { reaction, IReactionPublic, IReactionOptions } from 'mobx';
 
-import { Options } from './types';
-
+/**
+ * Thin auto-disposing wrapper around a mobx reaction
+ *
+ * @param expression mobx reaction expression
+ * @param effect mobx reaction effect
+ * @param options mobx reaction options
+ */
 const useReaction = <T>(
-  selector: () => T,
-  { jsConvert = true, stateComparer = comparer.structural }: Options<T> = {},
+  expression: (reactionObject: IReactionPublic) => T,
+  effect: (arg: T, reactionObject: IReactionPublic) => void,
+  options?: IReactionOptions,
 ) => {
-  const [state, setState] = useState(jsConvert ? toJS(selector()) : selector());
-
   useEffect(() => {
-    const disposer = reaction(selector, value => {
-      const next = jsConvert ? toJS(value) : value;
-
-      setState(current => (stateComparer(current, next) ? current : value));
-    });
+    const disposer = reaction(expression, effect, options);
 
     return disposer;
-  }, [jsConvert, selector, stateComparer]);
-
-  return state;
+  }, [effect, expression, options]);
 };
 
 export default useReaction;

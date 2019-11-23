@@ -1,13 +1,13 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 
 import TestObservable from './test-observable';
-import useReaction from './use-reaction';
+import useStateFromReaction from './use-state-from-reaction';
 
-describe('useReaction', () => {
+describe('useStateFromReaction', () => {
   it('reacts to observable changes and cleans up on unmount', () => {
     const subject = new TestObservable();
     const rendered = renderHook(() =>
-      useReaction(() => ({
+      useStateFromReaction(() => ({
         primitive: subject.observablePrimitive,
         num: subject.get('num'),
         str: subject.get('str'),
@@ -53,7 +53,7 @@ describe('useReaction', () => {
   it('provides stable state', () => {
     const subject = new TestObservable({ num: 1, arr: [1, 2] });
     const rendered = renderHook(() =>
-      useReaction(() => ({
+      useStateFromReaction(() => ({
         primitive: subject.observablePrimitive,
         num: subject.get('num'),
         str: subject.get('str'),

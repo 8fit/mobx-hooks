@@ -1,22 +1,32 @@
 import { useCallback } from 'react';
+import { IReactionPublic, IReactionOptions } from 'mobx';
 
-import { Options } from './types';
 import useReaction from './use-reaction';
 
+/**
+ * Attach a source object for setting up an auto disposed mobx reaction
+ *
+ * @example
+ * const useStoreReaction = createSourceReactionHook(new Store())
+ * useStoreReaction(store => store.account.locale, locale => (cache.invalidate(locale !== 'en')))
+ * // will run effect whenever store.account.locale changes
+ *
+ * @param expressionFromData mobx reaction expression
+ * @param effect mobx reaction effect
+ * @param options mobx reaction options
+ */
 const createSourceReactionHook = <S>(source: S) => <T>(
-  selectorFromSource: (source: S) => T,
-  options?: Options<T>,
+  expressionFromSource: (source: S, reactionObject: IReactionPublic) => T,
+  effect: (arg: T, reactionObject: IReactionPublic) => void,
+  options?: IReactionOptions,
 ) => {
-  const selector = useCallback(() => selectorFromSource(source), [
-    selectorFromSource,
-  ]);
-  const state = useReaction(selector, options);
-  const withSource = useCallback(
-    <R>(handler: (source: S) => R) => handler(source),
-    [],
+  const expression = useCallback(
+    (reactionObject: IReactionPublic) =>
+      expressionFromSource(source, reactionObject),
+    [expressionFromSource],
   );
 
-  return [state, withSource] as const;
+  useReaction(expression, effect, options);
 };
 
 export default createSourceReactionHook;

@@ -1,8 +1,8 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 
 import TestObservable from './test-observable';
-import * as useReactiveProps from './use-reaction';
-import createSourceReactionHook from './create-source-reaction-hook';
+import * as useReactiveProps from './use-state-from-reaction';
+import createStateFromSourceReactionHook from './create-state-from-source-reaction-hook';
 
 const setup = () => {
   const source = {
@@ -10,7 +10,10 @@ const setup = () => {
     storeB: new TestObservable({ num: 0, str: 'storeB', arr: [] }),
   };
 
-  return { source, useSourceReaction: createSourceReactionHook(source) };
+  return {
+    source,
+    useStateFromSourceReaction: createStateFromSourceReactionHook(source),
+  };
 };
 
 describe('createSourceReactionHook', () => {
@@ -21,11 +24,11 @@ describe('createSourceReactionHook', () => {
       .spyOn(useReactiveProps, 'default')
       .mockImplementation(() => mockReactivePropsReturn);
 
-    const { useSourceReaction } = setup();
+    const { useStateFromSourceReaction } = setup();
     const selector = () => ({});
     const options = {};
 
-    const noOptions = renderHook(() => useSourceReaction(selector));
+    const noOptions = renderHook(() => useStateFromSourceReaction(selector));
 
     expect(useReactiveProps.default).toHaveBeenLastCalledWith(
       expect.any(Function),
@@ -35,7 +38,9 @@ describe('createSourceReactionHook', () => {
 
     noOptions.unmount();
 
-    const withOptions = renderHook(() => useSourceReaction(selector, options));
+    const withOptions = renderHook(() =>
+      useStateFromSourceReaction(selector, options),
+    );
 
     expect(useReactiveProps.default).toHaveBeenLastCalledWith(
       expect.any(Function),
@@ -49,10 +54,10 @@ describe('createSourceReactionHook', () => {
   });
 
   it('responds to observable changes from the source object', () => {
-    const { useSourceReaction, source } = setup();
+    const { useStateFromSourceReaction, source } = setup();
 
     const rendered = renderHook(() =>
-      useSourceReaction(source => ({
+      useStateFromSourceReaction(source => ({
         contentA: source.storeA.computedSerializedAttributes,
         contentB: source.storeB.computedSerializedAttributes,
       })),
@@ -85,9 +90,9 @@ describe('createSourceReactionHook', () => {
   });
 
   it('returns a function that provides access to the source object', () => {
-    const { useSourceReaction, source } = setup();
+    const { useStateFromSourceReaction, source } = setup();
 
-    const rendered = renderHook(() => useSourceReaction(() => ({})));
+    const rendered = renderHook(() => useStateFromSourceReaction(() => ({})));
 
     let providedSource: unknown;
 
