@@ -1,8 +1,18 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { comparer, toJS, IReactionPublic } from 'mobx';
 
-import { ReactionToStateOptions } from './types';
+import { StateFromReactionOptions } from './types';
 import useReaction from './use-reaction';
+
+const valueConverter: {
+  [key in NonNullable<StateFromReactionOptions<unknown>['convertToJs']>]: <T>(
+    value: T,
+  ) => T;
+} = {
+  recurse: <T>(value: T) => toJS(value, { recurseEverything: true }),
+  shallow: toJS,
+  never: value => value,
+};
 
 /**
  * Use a mobx reaction to generate returned state which responds to observable changes
@@ -20,21 +30,20 @@ import useReaction from './use-reaction';
 const useStateFromReaction = <T>(
   expression: (reactionObject?: IReactionPublic) => T,
   {
-    convertToJs = true,
+    convertToJs = 'recurse',
     stateEquals = comparer.structural,
     reactionOptions = { fireImmediately: false },
-  }: ReactionToStateOptions<T> = {},
+  }: StateFromReactionOptions<T> = {},
 ) => {
-  const [state, setState] = useState(
-    convertToJs ? toJS(expression()) : expression(),
-  );
+  const convert = useMemo(() => valueConverter[convertToJs], [convertToJs]);
+  const [state, setState] = useState(convert(expression()));
 
   useReaction(
     reactionObject => expression(reactionObject),
     value => {
-      const nextValue = convertToJs ? toJS(value) : value;
+      const next = convert(value);
 
-      setState(current => (stateEquals(current, nextValue) ? current : value));
+      setState(current => (stateEquals(current, next) ? current : next));
     },
     reactionOptions,
   );

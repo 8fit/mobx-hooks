@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { IReactionPublic } from 'mobx';
 
-import { ReactionToStateOptions } from './types';
+import { StateFromReactionOptions } from './types';
 import useStateFromReaction from './use-state-from-reaction';
 
 /**
@@ -21,7 +21,7 @@ import useStateFromReaction from './use-state-from-reaction';
  */
 const createStateFromSourceReactionHook = <S>(source: S) => <T>(
   expressionFromSource: (source: S, reactionObject?: IReactionPublic) => T,
-  options?: ReactionToStateOptions<T>,
+  options?: StateFromReactionOptions<T>,
 ) => {
   const expression = useCallback(
     (reactionObject?: IReactionPublic) =>

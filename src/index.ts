@@ -1,4 +1,4 @@
-import { ReactionToStateOptions } from './types';
+import { StateFromReactionOptions } from './types';
 import useReaction from './use-reaction';
 import useStateFromReaction from './use-state-from-reaction';
 import createSourceReactionHook from './create-source-reaction-hook';
@@ -11,5 +11,5 @@ export {
   createStateFromSourceReactionHook,
   // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
   // @ts-ignore
-  ReactionToStateOptions,
+  StateFromReactionOptions as ReactionToStateOptions,
 };
