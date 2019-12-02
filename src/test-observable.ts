@@ -1,6 +1,11 @@
 import { observable, computed } from 'mobx';
 
-type Attributes = { num: number; str: string; arr: unknown[] };
+type Attributes = {
+  num: number;
+  str: string;
+  arr: unknown[];
+  obj: { [key: string]: unknown };
+};
 
 export default class TestObservable {
   private attributes = observable.map<keyof Attributes>({});

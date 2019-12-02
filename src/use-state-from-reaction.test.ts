@@ -1,3 +1,4 @@
+import { isObservable } from 'mobx';
 import { renderHook, act } from '@testing-library/react-hooks';
 
 import TestObservable from './test-observable';
@@ -89,5 +90,56 @@ describe('useStateFromReaction', () => {
     });
 
     expect(rendered.result.current).not.toBe(secondResultState);
+  });
+
+  describe('options', () => {
+    it('respects stateEquals option', () => {
+      const subject = new TestObservable({ num: 2 });
+      const rendered = renderHook(() =>
+        useStateFromReaction(() => ({ num: subject.get('num') || 1 }), {
+          stateEquals: (state, nextState) => nextState.num % state.num === 0,
+        }),
+      );
+
+      const firstResultState = rendered.result.current;
+
+      act(() => {
+        subject.set({ num: 3 });
+      });
+
+      const secondResultState = rendered.result.current;
+
+      expect(secondResultState).not.toBe(firstResultState);
+
+      act(() => {
+        subject.set({ num: 6 });
+      });
+
+      expect(rendered.result.current).toBe(secondResultState);
+    });
+
+    it('respects convertToJs option', () => {
+      const subject = new TestObservable({ obj: { inner: { e: 5 } } });
+      const expression = () => ({ obj: subject.get('obj') });
+      const convert = renderHook(() =>
+        useStateFromReaction(expression, { convertToJs: 'recurse' }),
+      );
+      const noConvert = renderHook(() =>
+        useStateFromReaction(expression, { convertToJs: 'never' }),
+      );
+
+      expect(isObservable(convert.result.current.obj?.inner)).toBe(false);
+      expect(isObservable(noConvert.result.current.obj?.inner)).toBe(true);
+
+      const convertResultOne = convert.result.current;
+      const noConvertResultOne = noConvert.result.current;
+
+      act(() => {
+        subject.set({ obj: { inner: { e: 5 } } });
+      });
+
+      expect(convert.result.current).toBe(convertResultOne);
+      expect(noConvert.result.current).toBe(noConvertResultOne);
+    });
   });
 });
