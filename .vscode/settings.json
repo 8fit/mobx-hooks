@@ -6,11 +6,15 @@
   },
   "files.watcherExclude": {
     "**/node_modules": true,
-    "**/dist/": true
+    "**/dist/": true,
+    "**/lib/": true,
+    "**/reports/": true
   },
   "search.exclude": {
     "**/node_modules": true,
-    "**/dist/": true
+    "**/dist/": true,
+    "**/lib/": true,
+    "**/reports/": true
   },
   "tslint.enable": false,
   "typescript.tsdk": "node_modules/typescript/lib",
