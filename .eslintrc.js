@@ -26,6 +26,7 @@ module.exports = {
     'filenames/match-exported': ['error', 'kebab'],
     'import/no-cycle': 'error',
     'import/no-self-import': 'error',
+    'import/no-unused-modules': 'error',
     'import/no-useless-path-segments': 'error',
     'import/no-extraneous-dependencies': [
       'error',
@@ -33,6 +34,19 @@ module.exports = {
         devDependencies: true,
         optionalDependencies: false,
         peerDependencies: false,
+      },
+    ],
+    'import/order': [
+      'warn',
+      {
+        'groups': [
+          'builtin',
+          'external',
+          'internal',
+          ['parent', 'sibling', 'index'],
+        ],
+        'pathGroups': [{ pattern: '~/**', group: 'internal' }],
+        'newlines-between': 'always',
       },
     ],
     'react-hooks/rules-of-hooks': 'error',
@@ -56,7 +70,7 @@ module.exports = {
     },
     {
       files: ['**/*.test.*'],
-      env: { node: true, 'jest/globals': true },
+      env: { 'node': true, 'jest/globals': true },
       plugins: ['jest'],
       extends: ['plugin:jest/recommended', 'plugin:jest/style'],
       rules: {
