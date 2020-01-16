@@ -1,4 +1,4 @@
-import { isObservable } from 'mobx';
+import { isObservable, toJS } from 'mobx';
 import { renderHook, act } from '@testing-library/react-hooks';
 
 import TestObservable from './test-observable';
@@ -118,13 +118,13 @@ describe('useStateFromReaction', () => {
       expect(rendered.result.current).toBe(secondResultState);
     });
 
-    it('respects toJSOptions', () => {
+    it('respects stateToJs option', () => {
       const subject = new TestObservable({ obj: { inner: { e: 5 } } });
       const expression = () => ({ obj: subject.get('obj') });
-      const convert = renderHook(() => useStateFromReaction(expression));
-      const noConvert = renderHook(() =>
+      const noConvert = renderHook(() => useStateFromReaction(expression));
+      const convert = renderHook(() =>
         useStateFromReaction(expression, {
-          toJSOptions: { recurseEverything: false },
+          stateToJS: result => toJS(result, { recurseEverything: true }),
         }),
       );
 

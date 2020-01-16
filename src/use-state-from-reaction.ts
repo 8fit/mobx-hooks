@@ -1,17 +1,11 @@
 import { useState } from 'react';
-import { comparer, toJS, IReactionPublic } from 'mobx';
+import { comparer, IReactionPublic } from 'mobx';
 
 import { StateFromReactionOptions } from './types';
 import useReaction from './use-reaction';
 
 /**
  * Use a mobx reaction to generate returned state which responds to observable changes
- *
- * Note: By default, resulting values will be recursed to plain js using { recursveEverything: true }
- * in mobx#toJS options. To change this, use the options param with
- * {
- *   toJsOptions: { recurseEverything: false },
- * }
  *
  * @example
  * useStateFromReaction(() => ({ a: observable.a, b: otherObservable.b }))
@@ -21,24 +15,24 @@ import useReaction from './use-reaction';
  * // returns a state value typeof (observable.a + observable.b)
  *
  * @param expression mobx reaction expression (note: reaction object is not passed in initial state setup)
- * @param options state update options
+ * @param options state from reaction options
  */
 const useStateFromReaction = <T>(
   expression: (reactionObject?: IReactionPublic) => T,
-  options: StateFromReactionOptions<T> = {},
-) => {
-  const {
+  {
+    stateToJS,
     stateEquals = comparer.structural,
-    toJSOptions = { recurseEverything: true },
     reactionOptions = { fireImmediately: false },
-  } = options;
-  const convert = (value: T) => toJS(value, toJSOptions);
-  const [state, setState] = useState(convert(expression()));
+  }: StateFromReactionOptions<T> = {},
+) => {
+  const [state, setState] = useState(
+    stateToJS ? stateToJS(expression()) : expression(),
+  );
 
   useReaction(
     reactionObject => expression(reactionObject),
     value => {
-      const next = convert(value);
+      const next = stateToJS ? stateToJS(value) : value;
 
       setState(current => (stateEquals(current, next) ? current : next));
     },
