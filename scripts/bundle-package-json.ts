@@ -7,7 +7,14 @@ const distPackageJsonPath = resolve(__dirname, '../dist/package.json');
 const readAttributes = [
   'name',
   'version',
+  'description',
+  'keywords',
+  'homepage',
+  'repository',
+  'bugs',
   'license',
+  'author',
+  'contributors',
   'dependencies',
   'peerDependencies',
 ];
@@ -23,7 +30,10 @@ const bundlePackageJson = async () => {
   );
 
   const filtered = readAttributes.reduce((acc, attribute) => {
-    acc[attribute] = packageJson[attribute];
+    const value = packageJson[attribute];
+
+    if (value) acc[attribute] = value;
+
     return acc;
   }, {} as { [key: string]: unknown });
 

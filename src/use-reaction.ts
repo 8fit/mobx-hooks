@@ -13,11 +13,11 @@ const useReaction = <T>(
   effect: (arg: T, reactionObject: IReactionPublic) => void,
   options?: IReactionOptions,
 ) => {
-  useEffect(() => {
-    const disposer = reaction(expression, effect, options);
-
-    return disposer;
-  }, [effect, expression, options]);
+  useEffect(() => reaction(expression, effect, options), [
+    effect,
+    expression,
+    options,
+  ]);
 };
 
 export default useReaction;

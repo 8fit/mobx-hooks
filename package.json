@@ -1,7 +1,16 @@
 {
   "name": "@8fit/mobx-hooks",
   "version": "0.0.1",
+  "description": "Simple utility hooks to integrate mobx observables with react components.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/8fit/mobx-hooks.git"
+  },
   "license": "MIT",
+  "author": "8fit <dev@8fit.com> https://8fit.com",
+  "contributors": [
+    "Kav Singh <flakisms@gmail.com>"
+  ],
   "typings": "./lib/src/index.d.ts",
   "scripts": {
     "test": "jest",
