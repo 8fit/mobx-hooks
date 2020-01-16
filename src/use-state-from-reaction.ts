@@ -23,9 +23,8 @@ import useReaction from './use-reaction';
  * @param expression mobx reaction expression (note: reaction object is not passed in initial state setup)
  * @param options state update options
  */
-type StateFromReactionExpression<T> = (reactionObject?: IReactionPublic) => T;
 const useStateFromReaction = <T>(
-  expression: StateFromReactionExpression<T>,
+  expression: (reactionObject?: IReactionPublic) => T,
   options: StateFromReactionOptions<T> = {},
 ) => {
   const {
