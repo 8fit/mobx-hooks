@@ -1,21 +1,17 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { comparer, toJS, IReactionPublic } from 'mobx';
 
 import { StateFromReactionOptions } from './types';
 import useReaction from './use-reaction';
 
-const valueConverter: {
-  [key in NonNullable<StateFromReactionOptions<unknown>['convertToJs']>]: <T>(
-    value: T,
-  ) => T;
-} = {
-  recurse: <T>(value: T) => toJS(value, { recurseEverything: true }),
-  shallow: toJS,
-  never: value => value,
-};
-
 /**
  * Use a mobx reaction to generate returned state which responds to observable changes
+ *
+ * Note: By default, resulting values will be recursed to plain js using { recursveEverything: true }
+ * in mobx#toJS options. To change this, use the options param with
+ * {
+ *   toJsOptions: { recurseEverything: false },
+ * }
  *
  * @example
  * useStateFromReaction(() => ({ a: observable.a, b: otherObservable.b }))
@@ -27,15 +23,17 @@ const valueConverter: {
  * @param expression mobx reaction expression (note: reaction object is not passed in initial state setup)
  * @param options state update options
  */
+type StateFromReactionExpression<T> = (reactionObject?: IReactionPublic) => T;
 const useStateFromReaction = <T>(
-  expression: (reactionObject?: IReactionPublic) => T,
-  {
-    convertToJs = 'recurse',
-    stateEquals = comparer.structural,
-    reactionOptions = { fireImmediately: false },
-  }: StateFromReactionOptions<T> = {},
+  expression: StateFromReactionExpression<T>,
+  options: StateFromReactionOptions<T> = {},
 ) => {
-  const convert = useMemo(() => valueConverter[convertToJs], [convertToJs]);
+  const {
+    stateEquals = comparer.structural,
+    toJSOptions = { recurseEverything: true },
+    reactionOptions = { fireImmediately: false },
+  } = options;
+  const convert = (value: T) => toJS(value, toJSOptions);
   const [state, setState] = useState(convert(expression()));
 
   useReaction(

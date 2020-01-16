@@ -118,14 +118,14 @@ describe('useStateFromReaction', () => {
       expect(rendered.result.current).toBe(secondResultState);
     });
 
-    it('respects convertToJs option', () => {
+    it('respects toJSOptions', () => {
       const subject = new TestObservable({ obj: { inner: { e: 5 } } });
       const expression = () => ({ obj: subject.get('obj') });
-      const convert = renderHook(() =>
-        useStateFromReaction(expression, { convertToJs: 'recurse' }),
-      );
+      const convert = renderHook(() => useStateFromReaction(expression));
       const noConvert = renderHook(() =>
-        useStateFromReaction(expression, { convertToJs: 'never' }),
+        useStateFromReaction(expression, {
+          toJSOptions: { recurseEverything: false },
+        }),
       );
 
       expect(isObservable(convert.result.current.obj?.inner)).toBe(false);
