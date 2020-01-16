@@ -69,7 +69,7 @@ module.exports = {
       },
     },
     {
-      files: ['**/*.test.*'],
+      files: ['**/*.test.*', '**/__fixtures__/**'],
       env: { 'node': true, 'jest/globals': true },
       plugins: ['jest'],
       extends: ['plugin:jest/recommended', 'plugin:jest/style'],

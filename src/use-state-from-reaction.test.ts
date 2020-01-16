@@ -1,7 +1,7 @@
 import { isObservable, toJS } from 'mobx';
 import { renderHook, act } from '@testing-library/react-hooks';
 
-import TestObservable from './test-observable';
+import TestObservable from './__fixtures__/test-observable';
 import useStateFromReaction from './use-state-from-reaction';
 
 describe('useStateFromReaction', () => {

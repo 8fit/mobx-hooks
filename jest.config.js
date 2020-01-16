@@ -11,4 +11,5 @@ module.exports = {
   },
   coverageReporters: ['lcov'],
   coveragePathIgnorePatterns: ['/node_modules/'],
+  collectCoverageFrom: ['src/**', '!**/__fixtures__/**'],
 };

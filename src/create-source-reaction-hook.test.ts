@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react-hooks';
 
-import TestObservable from './test-observable';
+import TestObservable from './__fixtures__/test-observable';
 import createSourceReactionHook from './create-source-reaction-hook';
 
 describe('useSourceReaction', () => {
